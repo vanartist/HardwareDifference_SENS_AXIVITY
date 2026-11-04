@@ -1,0 +1,28 @@
+{
+    "Lying Prone": "Lie",
+    "Lying Supine": "Lie",
+    "Lying Side": "Lie",
+    "Sitting": "Sit",
+    "Low kneeling": "Other",
+    "Half kneeling": "Other",
+    "High kneeling": "Other",
+    "Standing": "Stand",
+    "Throwing and catching": "Other",
+    "Walking": "Walk",
+    "Running": "Run",
+    "Skipping": "Other",
+    "Jumping": "Other",
+    "Walking upstairs": "Stairs",
+    "Walking downstairs": "Stairs",
+    "Running upstairs": "Stairs",
+    "Running downstairs": "Stairs",
+    "Handstand": "Other",
+    "Cartwheel": "Other",
+    "All 4s": "Other",
+    "Transition": "Other",
+    "Other": "Other",
+    "Uncodable": "Unknown",
+    "Unsure": "Unknown",
+    "NA": "Unknown"
+  }
+  

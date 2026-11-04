@@ -1,0 +1,14 @@
+# Core numerical and tabular dependencies
+numpy==2.2.6
+pandas==2.2.3
+scikit-learn==1.6.1
+
+# Deep-learning runtime
+torch==2.7.0
+
+# Progress reporting and figures
+Pillow==11.2.1
+tqdm==4.67.1
+
+# Summary workbook export
+openpyxl==3.1.5

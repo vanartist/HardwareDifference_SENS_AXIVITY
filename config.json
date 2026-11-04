@@ -1,0 +1,74 @@
+{
+  "paths": {
+    "train_data_dir": "",
+    "test_data_dir": "",
+    "class_map_path": "activity_class_map.json",
+    "cache_dir": "",
+    "results_dir": "results",
+    "summary_dir": "summary",
+    "file_pattern": "P*/cleaned_data_*_30hz_v1.1.csv"
+  },
+  "experiment": {
+    "number_of_runs": 5,
+    "run_prefix": "Result",
+    "models": ["cnn", "cnn_bilstm", "cnn_bilstm_attention"],
+    "windows_seconds": [3],
+    "purities": ["mixed"],
+    "custom_combinations": []
+  },
+  "training": {
+    "sample_rate_hz": 30,
+    "epochs": 12,
+    "patience": 2,
+    "max_trials": 2,
+    "validation_fraction": 0.15,
+    "search_validation_fraction": 0.2,
+    "split_mode": "participant",
+    "device": "auto",
+    "num_workers": 0,
+    "deterministic": true,
+    "use_cache": true,
+    "continue_on_error": true,
+    "augmentation": {
+      "jitter_std": 0.01,
+      "scale_std": 0.05,
+      "time_mask_probability": 0.5,
+      "max_mask_ratio": 0.1,
+      "base_probability": 0.45,
+      "maximum_probability": 0.9,
+      "maximum_mask_probability": 0.95,
+      "standard_deviation_boost_cap": 1.4,
+      "mask_ratio_cap": 0.18,
+      "maximum_class_boost": 1.8
+    },
+    "class_weights": {
+      "beta": 0.999,
+      "minimum": 0.6,
+      "maximum": 2.8
+    },
+    "scheduler": {
+      "factor": 0.5,
+      "patience": 1
+    },
+    "temporal_occlusion_segments": 5
+  },
+  "summary": {
+    "include_partial_results": false,
+    "overwrite_output": true,
+    "dpi": 400
+  },
+  "search_spaces": {
+    "cnn": [
+      {"conv_channels": [64, 128], "kernel_size": 5, "dropout": 0.3, "lr": 0.0003, "weight_decay": 0.0001, "batch_size": 128, "focal_gamma": 1.5, "label_smoothing": 0.05},
+      {"conv_channels": [32, 64], "kernel_size": 5, "dropout": 0.2, "lr": 0.0005, "weight_decay": 0.0001, "batch_size": 128, "focal_gamma": 2.0, "label_smoothing": 0.03}
+    ],
+    "cnn_bilstm": [
+      {"conv_channels": [64, 128], "kernel_size": 5, "lstm_hidden": 128, "lstm_layers": 1, "bidirectional": true, "dropout": 0.2, "lr": 0.0003, "weight_decay": 0.0001, "batch_size": 128, "focal_gamma": 1.5, "label_smoothing": 0.05},
+      {"conv_channels": [32, 64], "kernel_size": 5, "lstm_hidden": 64, "lstm_layers": 1, "bidirectional": true, "dropout": 0.1, "lr": 0.0005, "weight_decay": 0.0001, "batch_size": 128, "focal_gamma": 2.0, "label_smoothing": 0.03}
+    ],
+    "cnn_bilstm_attention": [
+      {"conv_channels": [64, 128], "kernel_size": 5, "lstm_hidden": 128, "lstm_layers": 1, "bidirectional": true, "dropout": 0.2, "lr": 0.0003, "weight_decay": 0.0001, "batch_size": 128, "focal_gamma": 1.5, "label_smoothing": 0.05},
+      {"conv_channels": [32, 64], "kernel_size": 5, "lstm_hidden": 64, "lstm_layers": 1, "bidirectional": true, "dropout": 0.1, "lr": 0.0005, "weight_decay": 0.0001, "batch_size": 128, "focal_gamma": 2.0, "label_smoothing": 0.03}
+    ]
+  }
+}

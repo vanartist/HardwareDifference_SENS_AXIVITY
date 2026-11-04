@@ -1,0 +1,137 @@
+RUN INSTRUCTIONS
+
+run_experiments.py is the starting point for running the experiments.
+Run this file directly after checking the configuration. It reads config.json
+and then trains and evaluates the selected models.
+
+config.json is the configuration file. Use it to set the input and output
+paths, models, window lengths, purity conditions, training options, device,
+and hyperparameter search spaces. Relative paths in config.json are resolved
+from the project directory.
+
+generate_reviewer_tables.py is the starting point for generating the final
+tables, Appendix Tables A1-A2, and confusion-matrix figures. Run it after the
+experiments have finished. It reads the existing Result folders and does not
+train the models.
+
+In short:
+
+1. Edit config.json.
+2. Run run_experiments.py.
+3. Run generate_reviewer_tables.py to generate the tables and figures.
+
+1. Prepare the environment
+
+Use a Python environment containing the packages listed in requirements.txt.
+The project can run on CPU or a CUDA-compatible GPU.
+
+
+2. Configure the experiment
+
+Edit config.json before starting the run. It is the only place used for
+runtime settings and project paths. Relative paths are resolved from the
+project directory.
+
+Important settings:
+
+paths.train_data_dir            Training data directory
+paths.test_data_dir             Test data directory
+paths.class_map_path            Class mapping file
+paths.cache_dir                 Window cache directory
+paths.results_dir               Directory containing experiment runs
+paths.summary_dir               Summary tables and confusion matrices
+experiment.number_of_runs       Number of consecutive runs
+experiment.models               Models to include
+experiment.windows_seconds      Positive window lengths in seconds
+experiment.purities             Window conditions: pure or mixed
+experiment.custom_combinations  Optional [model, window, purity] entries
+training.sample_rate_hz          Input sampling rate
+training.epochs                  Maximum epochs per trial
+training.device                  auto, cpu, cuda, or cuda:N
+search_spaces                    Per-model hyperparameter trials
+
+There is no random-seed setting in config.json. Each Result run receives a
+new system-generated 32-bit seed. The seed is printed at the start of the run,
+and the trial seeds are saved in hyperparameter_results.csv. Consequently,
+relaunching the script does not reuse a fixed seed.
+
+
+WINDOW LABEL RULE
+-----------------
+
+Windows are non-overlapping and start from the first available timestamp in
+each participant file. A valid window must contain exactly
+training.sample_rate_hz multiplied by the configured window length samples
+from both synchronized devices, with finite acceleration values and matching
+sample-level labels.
+
+For the pure condition, every sample in the window must have the same label.
+For the mixed condition, the most frequent label is used. If two or more
+labels are tied for most frequent, the window is retained and the first value
+returned by pandas Series.mode() is used. Windows assigned Other, Unknown or
+an unmapped label are not included in the six-class analysis.
+
+
+3. Start the experiments
+
+run_experiments.py is the experiment entry point. Open it and run the script
+directly. No command-line arguments are required or accepted. The script
+reads config.json, prints the selected plan, and calls the model code in the
+same Python process.
+
+Each independent run produces one new result directory. With
+experiment.number_of_runs set to 1, the first time run_experiments.py is run
+the output is stored in Result. The next time it is run, the output is stored
+in Result_1, followed by Result_2, Result_3, and so on:
+
+results\Result
+results\Result_1
+results\Result_2
+...
+
+Existing result directories are not overwritten. For example, if Result
+through Result_4 already exist, the next run is stored in Result_5. If
+experiment.number_of_runs is greater than 1, one launch creates that many
+consecutive Result directories.
+
+
+4. Build the summary
+
+generate_reviewer_tables.py is the table and figure generation entry point.
+After training finishes, open this file and run it directly. It reads all
+available Result, Result_1, Result_2, and subsequent run directories from the
+configured results directory and recreates:
+
+summary\Additional_file_1_cross_device_performance.xlsx
+summary\Appendix_Table_A1_window_distribution.xlsx
+summary\Appendix_Table_A2_acceleration_variability.xlsx
+summary\confusion_matrices\
+
+The summary script is intentionally separate from training. Appendix Tables
+A1 and A2 are generated automatically during the same summary run.
+
+
+5. Build Appendix Tables separately when needed
+
+Normally, start generate_reviewer_tables.py to build both appendix tables.
+To rebuild only one appendix workbook, run generate_appendix_table_a1.py or
+generate_appendix_table_a2.py directly. Neither script accepts command-line
+arguments.
+
+Table A1 reports counts and percentages by activity, device, and training or
+test dataset. It is written to:
+
+summary\Appendix_Table_A1_window_distribution.xlsx
+
+Table A2 uses the same paired, non-overlapping 3-s windows as the model code.
+For each window it calculates the sample standard deviation of each axis,
+takes the median for each participant, activity, and device, and then averages
+those participant medians with equal weight. It is written to:
+
+summary\Appendix_Table_A2_acceleration_variability.xlsx
+
+The workbook includes the final table and the participant-level medians used
+to calculate it.
+
+
+
